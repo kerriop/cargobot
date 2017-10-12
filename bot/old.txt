@@ -1,0 +1,28 @@
+﻿@bot.message_handler(commands=['setstate'])
+def handle_set_state(message):
+    state = int(message.text[10:])
+    print('setting state: ' + str(state))
+    db.set_state(message.chat.id, state)
+    bot.send_message(message.chat.id, 'state успешно установлен!')
+
+@bot.message_handler(commands=['getstate'])
+def handle_get_state(message):
+    state = db.get_state(message.chat.id)
+    bot.send_message(message.chat.id, 'state = ' + str(state))
+
+@bot.message_handler(commands=['site'])
+def handle_site(message):
+    addr = message.text[6:]
+    print('sitecmd: ' + addr)
+    if addr == '':
+        bot.send_message(message.chat.id, 'Using: /site site_url.domain')
+        return
+    session = requests.Session()
+    if addr[:7] != 'http://':
+        addr = 'http://' + addr
+    r = session.post(addr)
+    bot.send_message(message.chat.id, r.text)
+
+@bot.message_handler(commands=['testcaptcha'])
+def handle_testcaptcha(message):
+    recaptcha.solveRecaptcha(message.chat.id, '')
