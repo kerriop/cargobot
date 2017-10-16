@@ -1,5 +1,5 @@
 import db, main, keyboards, Localization
-import requests, json
+import requests, json, config
 
 class StateCore:
 
@@ -109,7 +109,7 @@ class MenuNewOrderState(StateCore):
         if self.substate == 10:
             if data == 'yes':
                 main.bot.send_message(chatid, Localization.getMessage('n.order_yes', lang), reply_markup=keyboards.zero)
-                r = requests.post('http://sys.uzglobal.space/ajax/ajaxCore.php', data={
+                r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={
                     'm': 'common',
                     'f': 'add_product_bot',
                     'name': self.name,
@@ -132,7 +132,7 @@ class MenuNewOrderState(StateCore):
                 return
 
     def sendOrderInfo(self, chatid, lang):
-        r = requests.post('http://sys.uzglobal.space/ajax/ajaxCore.php', data={'m': 'common', 'f': 'common_info', 'weight': self.weight})
+        r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'common_info', 'weight': self.weight})
         j = json.loads(r.text)
         if j['err'] == '1':
             main.bot.send_message(chatid, 'Internal error!', reply_markup=keyboards.zero)
@@ -201,7 +201,7 @@ class MenuTrackState(StateCore):
                 return
             trackCode = 'TR-UZ-' + str(id).rjust(3, '0')
 
-        r = requests.post('http://sys.uzglobal.space/ajax/ajaxCore.php', data={'m': 'common', 'f': 'product_info', 'id': id})
+        r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'product_info', 'id': id})
         j = json.loads(r.text)
         if j['err'] == '1':
             main.bot.send_message(chatid, 'Internal error!', reply_markup=keyboards.zero)
