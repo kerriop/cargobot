@@ -209,21 +209,21 @@ class MenuTrackState(StateCore):
             return
         j = json.loads(j['msg'])
         print(j)
-        ret = Localization.getMessage('i.your_track', lang) + "\n" + str(j['name']) + "\n\n" + Localization.getMessage('i.contacts', lang) + "\n" + "**" + str(j['phone']) + "**\n\n" + Localization.getMessage('i.tarif', lang) + str(j['from']) + '-' + str(j['to']) + Localization.getMessage('i.days', lang)
+        ret = Localization.getMessage('i.your_track', lang) + "\n" + str(j['name']) + "\n\n" + Localization.getMessage('i.contacts', lang) + "\n" + "*" + str(j['phone']) + "*\n\n" + Localization.getMessage('i.tarif', lang) + str(j['from']) + '-' + str(j['to']) + Localization.getMessage('i.days', lang) + "\n"
         #main.bot.send_message(chatid, Localization.getMessage('i.wait', lang) + str(j['day']) + ' ' + Localization.getMessage('m.' + str(j['month']), lang), reply_markup=keyboards.zero)
         if int(j['payed']) == 1:
-            ret += Localization.getMessage('i.pricey', lang) + str(j['price']) + '$'
+            ret += Localization.getMessage('i.pricey', lang) + str(j['price']) + '$' + "\n"
         else:
-            ret += Localization.getMessage('i.price', lang) + str(j['price']) + '$'
-        ret += Localization.getMessage('i.weight', lang) + str(j['weight']) + ' ' + Localization.getMessage('n.kgs', lang)
+            ret += Localization.getMessage('i.price', lang) + str(j['price']) + '$' + "\n"
+        ret += Localization.getMessage('i.weight', lang) + str(j['weight']) + ' ' + Localization.getMessage('n.kgs', lang) + "\n"
         pstate = int(j['state'])
         if pstate == 0:
             #головной офис
-            ret += Localization.getMessage('i.office', lang)
+            ret += Localization.getMessage('i.office', lang) + "\n"
             ret += str(j['date']) + Localization.getMessage('i.stambul', lang)
         elif pstate >= 1:
             #терр.
-            ret += Localization.getMessage('i.terr', lang)
+            ret += Localization.getMessage('i.terr', lang) + "\n"
             ret += str(j['date']) + Localization.getMessage('i.tashkent', lang)
 
         main.bot.send_message(chatid, ret, reply_markup=keyboards.zero)
