@@ -201,7 +201,7 @@ class MenuTrackState(StateCore):
                 return
             trackCode = 'TR-UZ-' + str(id).rjust(3, '0')
 
-        r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'product_info', 'id': id})
+        r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'product_info', 'id': id, 'lang': lang})
         j = json.loads(r.text)
         if j['err'] == '1':
             main.bot.send_message(chatid, 'Internal error!', reply_markup=keyboards.zero)
@@ -220,11 +220,11 @@ class MenuTrackState(StateCore):
         if pstate == 0:
             #головной офис
             ret += Localization.getMessage('i.office', lang) + "\n"
-            ret += str(j['date']) + Localization.getMessage('i.stambul', lang)
+            ret += str(j['date']) + '. ' + Localization.getMessage('i.stambul', lang)
         elif pstate >= 1:
             #терр.
             ret += Localization.getMessage('i.terr', lang) + "\n"
-            ret += str(j['date']) + Localization.getMessage('i.tashkent', lang)
+            ret += str(j['date']) + '. ' + Localization.getMessage('i.tashkent', lang)
 
         main.bot.send_message(chatid, ret, reply_markup=keyboards.zero)
         returnToMainMenu(chatid)
