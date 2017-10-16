@@ -209,20 +209,22 @@ class MenuTrackState(StateCore):
             return
         j = json.loads(j['msg'])
         print(j)
-        main.bot.send_message(chatid, Localization.getMessage('i.your_track', lang) + str(j['name']) + '. ' + trackCode, reply_markup=keyboards.zero)
-        main.bot.send_message(chatid, Localization.getMessage('i.tarif', lang) + str(j['from']) + '-' + str(j['to']) + Localization.getMessage('i.days', lang), reply_markup=keyboards.zero)
-        main.bot.send_message(chatid, Localization.getMessage('i.wait', lang) + str(j['day']) + ' ' + Localization.getMessage('m.' + str(j['month']), lang), reply_markup=keyboards.zero)
+        ret = Localization.getMessage('i.your_track', lang) + "\n" + str(j['name']) + "\n\n" + Localization.getMessage('i.contacts', lang) + "\n" + "**" + str(j['phone']) + "**\n\n" + Localization.getMessage('i.tarif', lang) + str(j['from']) + '-' + str(j['to']) + Localization.getMessage('i.days', lang)
+        #main.bot.send_message(chatid, Localization.getMessage('i.wait', lang) + str(j['day']) + ' ' + Localization.getMessage('m.' + str(j['month']), lang), reply_markup=keyboards.zero)
         if int(j['payed']) == 1:
-            main.bot.send_message(chatid, Localization.getMessage('i.pricey', lang) + str(j['price']) + '$', reply_markup=keyboards.zero)
+            ret += Localization.getMessage('i.pricey', lang) + str(j['price']) + '$'
         else:
-            main.bot.send_message(chatid, Localization.getMessage('i.price', lang) + str(j['price']) + '$', reply_markup=keyboards.zero)
+            ret += Localization.getMessage('i.price', lang) + str(j['price']) + '$'
+        ret += Localization.getMessage('i.weight', lang) + str(j['weight']) + ' ' + Localization.getMessage('n.kgs', lang)
         pstate = int(j['state'])
         if pstate == 0:
             #головной офис
-            main.bot.send_message(chatid, Localization.getMessage('i.office', lang), reply_markup=keyboards.zero)
-            main.bot.send_message(chatid, str(j['date']) + Localization.getMessage('i.stambul', lang), reply_markup=keyboards.zero)
+            ret += Localization.getMessage('i.office', lang)
+            ret += str(j['date']) + Localization.getMessage('i.stambul', lang)
         elif pstate >= 1:
             #терр.
-            main.bot.send_message(chatid, Localization.getMessage('i.terr', lang), reply_markup=keyboards.zero)
-            main.bot.send_message(chatid, str(j['date']) + Localization.getMessage('i.tashkent', lang), reply_markup=keyboards.zero)
+            ret += Localization.getMessage('i.terr', lang)
+            ret += str(j['date']) + Localization.getMessage('i.tashkent', lang)
+
+        main.bot.send_message(chatid, ret, reply_markup=keyboards.zero)
         returnToMainMenu(chatid)
