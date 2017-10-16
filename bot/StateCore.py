@@ -139,14 +139,16 @@ class MenuNewOrderState(StateCore):
             returnToMainMenu(chatid)
             return
         j = json.loads(j['msg'])
-        main.bot.send_message(chatid, Localization.getMessage('n.your_order', lang), reply_markup=keyboards.zero)
-        main.bot.send_message(chatid, self.name + ',', reply_markup=keyboards.zero)
-        main.bot.send_message(chatid, self.phone, reply_markup=keyboards.zero)
-        main.bot.send_message(chatid, str(self.weight) + ' ' + Localization.getMessage('n.kgs', lang), reply_markup=keyboards.zero)
-        main.bot.send_message(chatid, self.address, reply_markup=keyboards.zero)
-        main.bot.send_message(chatid, Localization.getMessage('n.p' + str(self.payed), lang), reply_markup=keyboards.zero)
-        main.bot.send_message(chatid, self.note, reply_markup=keyboards.zero)
-        main.bot.send_message(chatid, Localization.getMessage('n.result', lang) + str(j['price']), reply_markup=keyboards.zero)
+        ret = Localization.getMessage('n.your_order', lang) + "\n" + self.name + ',' + "\n" + self.phone + "\n" + str(self.weight) + "\n" + self.address + "\n" + Localization.getMessage('n.p' + str(self.payed), lang) + "\n" + self.note + "\n`" + Localization.getMessage('n.result', lang) + str(j['price']) + "`\n"
+        main.bot.send_message(chatid, ret, reply_markup=keyboards.zero, parse_mode='markdown')
+        #main.bot.send_message(chatid, Localization.getMessage('n.your_order', lang), reply_markup=keyboards.zero)
+        #main.bot.send_message(chatid, self.name + ',', reply_markup=keyboards.zero)
+        #main.bot.send_message(chatid, self.phone, reply_markup=keyboards.zero)
+        #main.bot.send_message(chatid, str(self.weight) + ' ' + Localization.getMessage('n.kgs', lang), reply_markup=keyboards.zero)
+        #main.bot.send_message(chatid, self.address, reply_markup=keyboards.zero)
+        #main.bot.send_message(chatid, Localization.getMessage('n.p' + str(self.payed), lang), reply_markup=keyboards.zero)
+        #main.bot.send_message(chatid, self.note, reply_markup=keyboards.zero)
+        #main.bot.send_message(chatid, Localization.getMessage('n.result', lang) + str(j['price']), reply_markup=keyboards.zero)
         main.bot.send_message(chatid, Localization.getMessage('n.tarif', lang) +
                               str(j['from']) + '-' + str(j['to']) +
                               Localization.getMessage('n.days', lang) +
@@ -209,12 +211,12 @@ class MenuTrackState(StateCore):
             return
         j = json.loads(j['msg'])
         print(j)
-        ret = Localization.getMessage('i.your_track', lang) + "\n" + str(j['name']) + "\n\n" + Localization.getMessage('i.contacts', lang) + "\n" + "*" + str(j['phone']) + "*\n\n" + Localization.getMessage('i.tarif', lang) + str(j['from']) + '-' + str(j['to']) + Localization.getMessage('i.days', lang) + "\n"
+        ret = Localization.getMessage('i.your_track', lang) + "\n" + str(j['name']) + "\n\n" + Localization.getMessage('i.contacts', lang) + "\n" + "`" + str(j['phone']) + "`\n\n" + Localization.getMessage('i.tarif', lang) + str(j['from']) + '-' + str(j['to']) + Localization.getMessage('i.days', lang) + "\n"
         #main.bot.send_message(chatid, Localization.getMessage('i.wait', lang) + str(j['day']) + ' ' + Localization.getMessage('m.' + str(j['month']), lang), reply_markup=keyboards.zero)
         if int(j['payed']) == 1:
-            ret += Localization.getMessage('i.pricey', lang) + str(j['price']) + '$' + "\n"
+            ret += '`' + Localization.getMessage('i.pricey', lang) + str(j['price']) + '$' + "\n`"
         else:
-            ret += Localization.getMessage('i.price', lang) + str(j['price']) + '$' + "\n"
+            ret += '`' + Localization.getMessage('i.price', lang) + str(j['price']) + '$' + "\n`"
         ret += Localization.getMessage('i.weight', lang) + str(j['weight']) + ' ' + Localization.getMessage('n.kgs', lang) + "\n"
         pstate = int(j['state'])
         if pstate == 0:
