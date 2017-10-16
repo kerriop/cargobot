@@ -1,6 +1,7 @@
 import config, db
 import telebot
 from StateCore import *
+import time
 
 bot = telebot.TeleBot(config.token)
 
@@ -40,4 +41,11 @@ def handler(message):
 
 if __name__ == '__main__':
     print('Бот успешно загружен')
-    bot.polling(none_stop=True)
+    # bot.polling(none_stop=True)
+    while True:
+        try:
+            bot.polling(none_stop=True)
+
+        except Exception as e:
+            print(e)
+            time.sleep(15)
