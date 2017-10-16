@@ -226,5 +226,5 @@ class MenuTrackState(StateCore):
             ret += Localization.getMessage('i.terr', lang) + "\n"
             ret += str(j['date']) + '. ' + Localization.getMessage('i.tashkent', lang)
 
-        main.bot.send_message(chatid, ret, reply_markup=keyboards.zero)
+        main.bot.send_message(chatid, ret, reply_markup=keyboards.zero, parse_mode='markdown')
         returnToMainMenu(chatid)
