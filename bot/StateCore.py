@@ -217,7 +217,7 @@ class MenuTrackState(StateCore):
             ret += '`' + Localization.getMessage('i.pricey', lang) + str(j['price']) + '$' + "\n`"
         else:
             ret += '`' + Localization.getMessage('i.price', lang) + str(j['price']) + '$' + "\n`"
-        ret += Localization.getMessage('i.weight', lang) + str(j['weight']) + ' ' + Localization.getMessage('n.kgs', lang) + "\n"
+        ret += Localization.getMessage('i.weight', lang) + str(j['weight']) + ' ' + Localization.getMessage('n.kgs', lang) + "\n\n"
         pstate = int(j['state'])
         if pstate == 0:
             #головной офис
