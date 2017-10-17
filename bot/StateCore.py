@@ -99,8 +99,8 @@ class MenuNewOrderState(StateCore):
 
     def reset(self, chatid):
         lang = db.getLang(chatid)
-        main.bot.send_message(chatid, Localization.getMessage('n.pre', lang), reply_markup=keyboards.zero)
-        main.bot.send_message(chatid, Localization.getMessage('n.name', lang), reply_markup=keyboards.zero)
+        main.bot.send_message(chatid, Localization.getMessage('n.pre', lang), reply_markup=keyboards.zero, parse_mode='markdown')
+        main.bot.send_message(chatid, Localization.getMessage('n.name', lang), reply_markup=keyboards.zero, parse_mode='markdown')
         self.substate = 0
 
     def handleSelect(self, data, chatid):
@@ -108,7 +108,7 @@ class MenuNewOrderState(StateCore):
         data = str(data)
         if self.substate == 10:
             if data == 'yes':
-                main.bot.send_message(chatid, Localization.getMessage('n.order_yes', lang), reply_markup=keyboards.zero)
+                main.bot.send_message(chatid, Localization.getMessage('n.order_yes', lang), reply_markup=keyboards.zero, parse_mode='markdown')
                 r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={
                     'm': 'common',
                     'f': 'add_product_bot',
@@ -121,13 +121,13 @@ class MenuNewOrderState(StateCore):
                 });
                 returnToMainMenu(chatid)
             elif data == 'no':
-                main.bot.send_message(chatid, Localization.getMessage('n.order_no', lang), reply_markup=keyboards.zero)
+                main.bot.send_message(chatid, Localization.getMessage('n.order_no', lang), reply_markup=keyboards.zero, parse_mode='markdown')
                 returnToMainMenu(chatid)
         else:
             if (data.startswith('n.')) and (self.substate == 4):
                 self.payed = int(data[len('n.'):])
                 self.substate = 5
-                main.bot.send_message(chatid, Localization.getMessage('n.note', lang), reply_markup=keyboards.zero)
+                main.bot.send_message(chatid, Localization.getMessage('n.note', lang), reply_markup=keyboards.zero, parse_mode='markdown')
             else:
                 return
 
@@ -160,25 +160,25 @@ class MenuNewOrderState(StateCore):
         if self.substate == 0:
             self.name = message
             self.substate = 1
-            main.bot.send_message(chatid, Localization.getMessage('n.phone', lang), reply_markup=keyboards.zero)
+            main.bot.send_message(chatid, Localization.getMessage('n.phone', lang), reply_markup=keyboards.zero, parse_mode='markdown')
         elif self.substate == 1:
             if not(message.isdigit()):
-                main.bot.send_message(chatid, 'Wrong phone format! Only digits without spaces or symbols!', reply_markup=keyboards.zero)
+                main.bot.send_message(chatid, 'Wrong phone format! Only digits without spaces or symbols!', reply_markup=keyboards.zero, parse_mode='markdown')
                 return
             self.phone = message
             self.substate = 2
-            main.bot.send_message(chatid, Localization.getMessage('n.weight', lang), reply_markup=keyboards.zero)
+            main.bot.send_message(chatid, Localization.getMessage('n.weight', lang), reply_markup=keyboards.zero, parse_mode='markdown')
         elif self.substate == 2:
             if not(message.isdigit()):
-                main.bot.send_message(chatid, 'Wrong weight!', reply_markup=keyboards.zero)
+                main.bot.send_message(chatid, 'Wrong weight!', reply_markup=keyboards.zero, parse_mode='markdown')
                 return
             self.weight = int(message)
             self.substate = 3
-            main.bot.send_message(chatid, Localization.getMessage('n.address', lang), reply_markup=keyboards.zero)
+            main.bot.send_message(chatid, Localization.getMessage('n.address', lang), reply_markup=keyboards.zero, parse_mode='markdown')
         elif self.substate == 3:
             self.address = message
             self.substate = 4
-            main.bot.send_message(chatid, Localization.getMessage('n.payed', lang), reply_markup=keyboards.loc.getKeyboard('payed', lang))
+            main.bot.send_message(chatid, Localization.getMessage('n.payed', lang), reply_markup=keyboards.loc.getKeyboard('payed', lang), parse_mode='markdown')
         elif self.substate == 5:
             self.note = message
             self.substate = 10
