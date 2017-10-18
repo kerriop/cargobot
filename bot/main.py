@@ -1,7 +1,7 @@
 import config, db
 import telebot
 from StateCore import *
-import time
+import time, threading, requests
 
 bot = telebot.TeleBot(config.token)
 
@@ -39,9 +39,21 @@ def handler(message):
         return
     state.handleMessage(chatid, message.text)
 
+def eventsCheck():
+    evr = requests.post('http://127.0.0.1/ajax/ajaxCore.php', data={'m': 'common', 'f': 'get_events'})
+    print(evr)
+    j = json.loads(evr)
+    events = json.loads(j.msg)
+    for event in events:
+        chatid = int(event['chatid'])
+        product_id = str(event['product_id'])
+        sendTrackState(chatid, product_id)
+    threading.Timer(10.0, eventsCheck).start()
+
 if __name__ == '__main__':
     print('Бот успешно загружен')
     # bot.polling(none_stop=True)
+    threading.Timer(10.0, eventsCheck).start()
     while True:
         try:
             bot.polling(none_stop=True)
