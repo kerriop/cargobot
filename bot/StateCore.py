@@ -209,6 +209,7 @@ class MenuTrackState(StateCore):
             main.bot.send_message(chatid, 'Internal error!', reply_markup=keyboards.zero)
             returnToMainMenu(chatid)
             return
+        requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'add_watcher', 'chatid': chatid, 'product_id': id})
         j = json.loads(j['msg'])
         print(j)
         ret = Localization.getMessage('i.your_track', lang) + "\n" + str(j['name']) + "\n\n" + Localization.getMessage('i.contacts', lang) + "\n" + "`" + str(j['phone']) + "`\n\n" + Localization.getMessage('i.tarif', lang) + str(j['from']) + '-' + str(j['to']) + Localization.getMessage('i.days', lang) + "\n"
