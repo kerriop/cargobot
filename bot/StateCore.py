@@ -185,52 +185,49 @@ class MenuNewOrderState(StateCore):
             self.sendOrderInfo(chatid, lang)
 
 
-def sendTrackState(chatid, message, toAdd=0):
-    lang = db.getLang(chatid)
-    message = str(message)
-    if message.startswith('TR-UZ-'):
-        id = int(message[len('TR-UZ-'):])
-        trackCode = str(message)
-    else:
-        if not (message.isdigit()):
-            returnToMainMenu(chatid)
-            return
-        id = int(message)
-        if (id >= 1000) or (id < 0):
-            returnToMainMenu(chatid)
-            return
-        trackCode = 'TR-UZ-' + str(id).rjust(3, '0')
-
-    r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'product_info', 'id': id, 'lang': lang})
-    j = json.loads(r.text)
-    if j['err'] == '1':
-        main.bot.send_message(chatid, 'Internal error!', reply_markup=keyboards.zero)
-        returnToMainMenu(chatid)
-        return
-    if toAdd == 1:
-        requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'add_watcher', 'chatid': chatid, 'product_id': id})
-    j = json.loads(j['msg'])
-    print(j)
-    ret = Localization.getMessage('i.your_track', lang) + "\n" + str(j['name']) + "\n\n" + Localization.getMessage('i.contacts', lang) + "\n" + "`" + str(j['phone']) + "`\n\n" + Localization.getMessage('i.tarif', lang) + str(j['from']) + '-' + str(j['to']) + Localization.getMessage('i.days', lang) + "\n"
-    # main.bot.send_message(chatid, Localization.getMessage('i.wait', lang) + str(j['day']) + ' ' + Localization.getMessage('m.' + str(j['month']), lang), reply_markup=keyboards.zero)
-    if int(j['payed']) == 1:
-        ret += '`' + Localization.getMessage('i.pricey', lang) + str(j['price']) + '$' + "\n`"
-    else:
-        ret += '`' + Localization.getMessage('i.price', lang) + str(j['price']) + '$' + "\n`"
-    ret += Localization.getMessage('i.weight', lang) + str(j['weight']) + ' ' + Localization.getMessage('n.kgs', lang) + "\n\n"
-    pstate = int(j['state'])
-    if pstate == 0:
-        # головной офис
-        ret += Localization.getMessage('i.office', lang) + "\n"
-        ret += str(j['date']) + '. ' + Localization.getMessage('i.stambul', lang)
-    elif pstate >= 1:
-        # терр.
-        ret += Localization.getMessage('i.terr', lang) + "\n"
-        ret += str(j['date']) + '. ' + Localization.getMessage('i.tashkent', lang)
-    main.bot.send_message(chatid, ret, reply_markup=keyboards.zero, parse_mode='markdown')
-
 class MenuTrackState(StateCore):
 
     def handleMessage(self, chatid, message):
-        sendTrackState(chatid, message, 1)
+        lang = db.getLang(chatid)
+        message = str(message)
+        if message.startswith('TR-UZ-'):
+            id = int(message[len('TR-UZ-'):])
+            trackCode = str(message)
+        else:
+            if not(message.isdigit()):
+                returnToMainMenu(chatid)
+                return
+            id = int(message)
+            if (id >= 1000) or (id < 0):
+                returnToMainMenu(chatid)
+                return
+            trackCode = 'TR-UZ-' + str(id).rjust(3, '0')
+
+        r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'product_info', 'id': id, 'lang': lang})
+        j = json.loads(r.text)
+        if j['err'] == '1':
+            main.bot.send_message(chatid, 'Internal error!', reply_markup=keyboards.zero)
+            returnToMainMenu(chatid)
+            return
+        requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'add_watcher', 'chatid': chatid, 'product_id': id})
+        j = json.loads(j['msg'])
+        print(j)
+        ret = Localization.getMessage('i.your_track', lang) + "\n" + str(j['name']) + "\n\n" + Localization.getMessage('i.contacts', lang) + "\n" + "`" + str(j['phone']) + "`\n\n" + Localization.getMessage('i.tarif', lang) + str(j['from']) + '-' + str(j['to']) + Localization.getMessage('i.days', lang) + "\n"
+        #main.bot.send_message(chatid, Localization.getMessage('i.wait', lang) + str(j['day']) + ' ' + Localization.getMessage('m.' + str(j['month']), lang), reply_markup=keyboards.zero)
+        if int(j['payed']) == 1:
+            ret += '`' + Localization.getMessage('i.pricey', lang) + str(j['price']) + '$' + "\n`"
+        else:
+            ret += '`' + Localization.getMessage('i.price', lang) + str(j['price']) + '$' + "\n`"
+        ret += Localization.getMessage('i.weight', lang) + str(j['weight']) + ' ' + Localization.getMessage('n.kgs', lang) + "\n\n"
+        pstate = int(j['state'])
+        if pstate == 0:
+            #головной офис
+            ret += Localization.getMessage('i.office', lang) + "\n"
+            ret += str(j['date']) + '. ' + Localization.getMessage('i.stambul', lang)
+        elif pstate >= 1:
+            #терр.
+            ret += Localization.getMessage('i.terr', lang) + "\n"
+            ret += str(j['date']) + '. ' + Localization.getMessage('i.tashkent', lang)
+
+        main.bot.send_message(chatid, ret, reply_markup=keyboards.zero, parse_mode='markdown')
         returnToMainMenu(chatid)
