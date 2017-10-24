@@ -190,20 +190,21 @@ class MenuTrackState(StateCore):
     def handleMessage(self, chatid, message):
         lang = db.getLang(chatid)
         message = str(message)
-        if message.startswith('TR-UZ-'):
-            id = int(message[len('TR-UZ-'):])
-            trackCode = str(message)
-        else:
-            if not(message.isdigit()):
-                returnToMainMenu(chatid)
-                return
-            id = int(message)
-            if (id >= 1000) or (id < 0):
-                returnToMainMenu(chatid)
-                return
-            trackCode = 'TR-UZ-' + str(id).rjust(3, '0')
+        #if message.startswith('TR-UZ-'):
+        #    id = int(message[len('TR-UZ-'):])
+        #    trackCode = str(message)
+        #else:
+        #    if not(message.isdigit()):
+        #        returnToMainMenu(chatid)
+        #        return
+        #    id = int(message)
+        #    if (id >= 1000) or (id < 0):
+        #        returnToMainMenu(chatid)
+        #        return
+        #    trackCode = 'TR-UZ-' + str(id).rjust(3, '0')
+        trackCode = message
 
-        r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'product_info', 'id': id, 'lang': lang})
+        r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'product_info', 'track_id': trackCode, 'lang': lang})
         j = json.loads(r.text)
         if j['err'] == '1':
             main.bot.send_message(chatid, 'Internal error!', reply_markup=keyboards.zero)
