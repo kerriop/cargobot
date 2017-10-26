@@ -207,7 +207,7 @@ class MenuTrackState(StateCore):
         r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'product_info', 'track_id': trackCode, 'lang': lang})
         j = json.loads(r.text)
         if j['err'] == '1':
-            main.bot.send_message(chatid, 'Internal error!', reply_markup=keyboards.zero)
+            main.bot.send_message(chatid, 'Internal error: ' + str(j['msg']), reply_markup=keyboards.zero)
             returnToMainMenu(chatid)
             return
         j = json.loads(j['msg'])
