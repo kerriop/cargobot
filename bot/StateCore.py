@@ -205,7 +205,12 @@ class MenuTrackState(StateCore):
         trackCode = message
 
         r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'product_info', 'track_id': trackCode, 'lang': lang})
-        j = json.loads(r.text)
+        try:
+            j = json.loads(r.text)
+        except:
+            print('[Mishin870] Error in handle track while parse json: ' + str(r.text))
+            returnToMainMenu(chatid)
+            return
         if j['err'] == '1':
             main.bot.send_message(chatid, 'Internal error: ' + str(j['msg']), reply_markup=keyboards.zero)
             returnToMainMenu(chatid)
