@@ -21,10 +21,8 @@ def selectHandler(c):
 @bot.message_handler(commands=['start'])
 def handle_start(message):
     chatid = message.chat.id
-    state = db.getState(chatid)
-    if state == None:
-        state = StateStart()
-        db.setState(chatid, state)
+    state = StateStart()
+    db.setState(chatid, state)
     state.handleStart(chatid)
 
 @bot.message_handler(content_types=["text"])
