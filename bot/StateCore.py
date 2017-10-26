@@ -91,6 +91,9 @@ class StateMenu(StateCore):
             main.bot.send_message(chatid, Localization.getMessage('manager', lang), reply_markup=keyboards.zero)
             self.reset(chatid)
 
+    def handleMessage(self, message, chatid):
+        self.reset(chatid)
+
 
 class MenuNewOrderState(StateCore):
 
