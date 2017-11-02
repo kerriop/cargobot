@@ -26,3 +26,34 @@ def handle_site(message):
 @bot.message_handler(commands=['testcaptcha'])
 def handle_testcaptcha(message):
     recaptcha.solveRecaptcha(message.chat.id, '')
+
+
+
+
+
+
+#main.bot.send_message(chatid, Localization.getMessage('n.your_order', lang), reply_markup=keyboards.zero)
+#main.bot.send_message(chatid, self.name + ',', reply_markup=keyboards.zero)
+#main.bot.send_message(chatid, self.phone, reply_markup=keyboards.zero)
+#main.bot.send_message(chatid, str(self.weight) + ' ' + Localization.getMessage('n.kgs', lang), reply_markup=keyboards.zero)
+#main.bot.send_message(chatid, self.address, reply_markup=keyboards.zero)
+#main.bot.send_message(chatid, Localization.getMessage('n.p' + str(self.payed), lang), reply_markup=keyboards.zero)
+#main.bot.send_message(chatid, self.note, reply_markup=keyboards.zero)
+#main.bot.send_message(chatid, Localization.getMessage('n.result', lang) + str(j['price']), reply_markup=keyboards.zero)
+
+
+
+#if message.startswith('TR-UZ-'):
+#    id = int(message[len('TR-UZ-'):])
+#    trackCode = str(message)
+#else:
+#    if not(message.isdigit()):
+#        returnToMainMenu(chatid)
+#        return
+#    id = int(message)
+#    if (id >= 1000) or (id < 0):
+#        returnToMainMenu(chatid)
+#        return
+#    trackCode = 'TR-UZ-' + str(id).rjust(3, '0')
+
+#main.bot.send_message(chatid, Localization.getMessage('i.wait', lang) + str(j['day']) + ' ' + Localization.getMessage('m.' + str(j['month']), lang), reply_markup=keyboards.zero)
