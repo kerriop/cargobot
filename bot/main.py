@@ -3,13 +3,6 @@ from StateCore import *
 import time
 import config
 
-bot = telebot.TeleBot(config.token)
-
-#bot.send_message(chatid, 'Чтобы продолжить, вам необходимо дать согласие на обработку и передачу своих персональных данных. Данные не будут переданы третьим лицам и сторонним организациям', reply_markup=keyboards.accept)
-#bot.send_message(chatid, 'Введите /start, чтобы начать', reply_markup=keyboards.zero)
-#bot.send_message(chatid, 'Здравствуйте, с помощью данного бота можно подать заявление на проживание в Турции через сайт https://e-ikamet.goc.gov.tr', reply_markup=keyboards.zero)
-#bot.send_message(chatid, 'Напишите "Далее" для продолжения', reply_markup=keyboards.next)
-
 
 @bot.callback_query_handler(func=lambda c: True)
 def select_handler(c):
@@ -42,6 +35,7 @@ def handler(message):
 
 
 if __name__ == '__main__':
+    bot = telebot.TeleBot(config.token)
     while True:
         try:
             print('Бот успешно загружен')

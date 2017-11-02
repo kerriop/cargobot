@@ -4,9 +4,9 @@ from telebot import types
 zero = types.ReplyKeyboardRemove()
 
 #Клавиатура для этапа проверки данных
-checkData = types.InlineKeyboardMarkup()
-checkData.add(types.InlineKeyboardButton(text='Продолжить', callback_data='cd:ok'))
-checkData.add(types.InlineKeyboardButton(text='Изменить поле', callback_data='cd:no'))
+check_data = types.InlineKeyboardMarkup()
+check_data.add(types.InlineKeyboardButton(text='Продолжить', callback_data='cd:ok'))
+check_data.add(types.InlineKeyboardButton(text='Изменить поле', callback_data='cd:no'))
 
 #Клавиатура для выбора языка
 language = types.InlineKeyboardMarkup()
@@ -76,18 +76,3 @@ tmp = types.InlineKeyboardMarkup()
 tmp.add(types.InlineKeyboardButton(text='[Onaylamak]', callback_data='yes'))
 tmp.add(types.InlineKeyboardButton(text='[İptal]', callback_data='no'))
 loc.setKeyboard('new_order_accept', 'tr', tmp)
-
-#Клавиатура для меню
-# menu = types.ReplyKeyboardMarkup(True, False)
-#menu = types.InlineKeyboardMarkup()
-#menu.add(types.InlineKeyboardButton(text='Отслеживание груза',callback_data='track'))
-#menu.add(types.InlineKeyboardButton(text='Сделать заказ',callback_data='order'))
-#menu.add(types.InlineKeyboardButton(text='Информация',callback_data='info'))
-#menu.add(types.InlineKeyboardButton(text='Позвать менеджера',callback_data='manager'))
-#menu.row('Отслеживание груза')
-#menu.row('Сделать заказ')
-#menu.row('Информация')
-#menu.row('Позвать менеджера')
-#
-# track = types.KeyboardButton('Отслеживание груза')
-# menu.add(track)
