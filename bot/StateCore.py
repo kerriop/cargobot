@@ -216,6 +216,7 @@ class MenuTrackState(StateCore):
 
         r = requests.post(config.site_base + 'ajax/ajaxCore.php',
                           data={'m': 'common', 'f': 'product_info', 'track_id': trackCode, 'lang': lang})
+        j = {'err': '1'}
         try:
             j = json.loads(r.text)
         except:

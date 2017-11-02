@@ -1,6 +1,7 @@
 import telebot
 from StateCore import *
 import time
+import config
 
 bot = telebot.TeleBot(config.token)
 
@@ -14,7 +15,7 @@ bot = telebot.TeleBot(config.token)
 def select_handler(c):
     chatid = c.message.chat.id
     state = db.getState(chatid)
-    if state is not None:
+    if state is None:
         return
     state.handle_select(c.data, chatid)
 
