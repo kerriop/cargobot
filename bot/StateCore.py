@@ -25,14 +25,15 @@ class StateCore:
         pass
 
 
-
 class StateStart(StateCore):
 
     def handle_start(self, chatid):
         state = StateWaitNext()
         db.setState(chatid, state)
-        main.bot.send_message(chatid, "Привет, я бот Uzglobalkargo. Я могу отследить ваш груз по вашему трэк-коду, присылать уведомления о доставке груза. Еще могу принимать новые заказы на отправку грузов из Турции в Узбекистан. Для продолжения напишите 'Далее'", reply_markup=keyboards.next)
-
+        main.bot.send_message(chatid, "Привет, я бот Uzglobalkargo. Я могу отследить ваш груз по вашему трэк-коду, "
+                                      "присылать уведомления о доставке груза. Еще могу принимать новые заказы на "
+                                      "отправку грузов из Турции в Узбекистан. Для продолжения напишите 'Далее'",
+                              reply_markup=keyboards.next)
 
 
 class StateWaitNext(StateCore):
@@ -41,7 +42,10 @@ class StateWaitNext(StateCore):
         if message == 'Далее':
             state = StateLicense()
             db.setState(chatid, state)
-            main.bot.send_message(chatid, 'Чтобы продолжить, вам необходимо дать согласие на обработку и передачу своих персональных данных. Данные не будут переданы третьим лицам и сторонним организациям', reply_markup=keyboards.accept)
+            main.bot.send_message(chatid, 'Чтобы продолжить, вам необходимо дать согласие на обработку и передачу '
+                                          'своих персональных данных. Данные не будут переданы третьим лицам и '
+                                          'сторонним организациям',
+                                  reply_markup=keyboards.accept)
 
 
 class StateLicense(StateCore):
@@ -53,7 +57,8 @@ class StateLicense(StateCore):
             main.bot.send_message(chatid, 'Выберите', reply_markup=keyboards.zero)
             main.bot.send_message(chatid, 'свой язык:', reply_markup=keyboards.language)
 
-def returnToMainMenu(chatid):
+
+def return_to_main_menu(chatid):
     state = StateMenu()
     db.setState(chatid, state)
     state.reset(chatid)
@@ -69,15 +74,15 @@ class StateLanguage(StateCore):
             db.setLang(chatid, 'tr')
         else:
             return
-        returnToMainMenu(chatid)
-
+        return_to_main_menu(chatid)
 
 
 class StateMenu(StateCore):
 
     def reset(self, chatid):
         code = db.getLang(chatid)
-        main.bot.send_message(chatid, Localization.getMessage('select_action', code), reply_markup=keyboards.loc.getKeyboard('menu', code))
+        main.bot.send_message(chatid, Localization.getMessage('select_action', code),
+                              reply_markup=keyboards.loc.getKeyboard('menu', code))
 
     def handle_select(self, data, chatid):
         lang = db.getLang(chatid)
@@ -85,7 +90,8 @@ class StateMenu(StateCore):
         if code == 'track':
             state = MenuTrackState()
             db.setState(chatid, state)
-            main.bot.send_message(chatid, Localization.getMessage('enter_client_code', lang), reply_markup=keyboards.zero)
+            main.bot.send_message(chatid, Localization.getMessage('enter_client_code', lang),
+                                  reply_markup=keyboards.zero)
         elif code == 'order':
             state = MenuNewOrderState()
             db.setState(chatid, state)
@@ -108,8 +114,10 @@ class MenuNewOrderState(StateCore):
 
     def reset(self, chatid):
         lang = db.getLang(chatid)
-        main.bot.send_message(chatid, Localization.getMessage('n.pre', lang), reply_markup=keyboards.zero, parse_mode='markdown')
-        main.bot.send_message(chatid, Localization.getMessage('n.name', lang), reply_markup=keyboards.zero, parse_mode='markdown')
+        main.bot.send_message(chatid, Localization.getMessage('n.pre', lang), reply_markup=keyboards.zero,
+                              parse_mode='markdown')
+        main.bot.send_message(chatid, Localization.getMessage('n.name', lang), reply_markup=keyboards.zero,
+                              parse_mode='markdown')
         self.substate = 0
 
     def handle_select(self, data, chatid):
@@ -117,7 +125,8 @@ class MenuNewOrderState(StateCore):
         data = str(data)
         if self.substate == 10:
             if data == 'yes':
-                main.bot.send_message(chatid, Localization.getMessage('n.order_yes', lang), reply_markup=keyboards.zero, parse_mode='markdown')
+                main.bot.send_message(chatid, Localization.getMessage('n.order_yes', lang), reply_markup=keyboards.zero,
+                                      parse_mode='markdown')
                 r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={
                     'm': 'common',
                     'f': 'add_product_bot',
@@ -128,70 +137,74 @@ class MenuNewOrderState(StateCore):
                     'address': self.address,
                     'note': self.note
                 });
-                returnToMainMenu(chatid)
+                return_to_main_menu(chatid)
             elif data == 'no':
-                main.bot.send_message(chatid, Localization.getMessage('n.order_no', lang), reply_markup=keyboards.zero, parse_mode='markdown')
-                returnToMainMenu(chatid)
+                main.bot.send_message(chatid, Localization.getMessage('n.order_no', lang), reply_markup=keyboards.zero,
+                                      parse_mode='markdown')
+                return_to_main_menu(chatid)
         else:
             if (data.startswith('n.')) and (self.substate == 4):
                 self.payed = int(data[len('n.'):])
                 self.substate = 5
-                main.bot.send_message(chatid, Localization.getMessage('n.note', lang), reply_markup=keyboards.zero, parse_mode='markdown')
+                main.bot.send_message(chatid, Localization.getMessage('n.note', lang), reply_markup=keyboards.zero,
+                                      parse_mode='markdown')
             else:
                 return
 
-    def sendOrderInfo(self, chatid, lang):
-        r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'common_info', 'weight': self.weight})
+    def send_order_info(self, chatid, lang):
+        r = requests.post(config.site_base + 'ajax/ajaxCore.php',
+                          data={'m': 'common', 'f': 'common_info', 'weight': self.weight})
         j = json.loads(r.text)
         if j['err'] == '1':
             main.bot.send_message(chatid, 'Internal error!', reply_markup=keyboards.zero)
-            returnToMainMenu(chatid)
+            return_to_main_menu(chatid)
             return
         j = json.loads(j['msg'])
-        ret = Localization.getMessage('n.your_order', lang) + "\n" + self.name + ',' + "\n" + self.phone + "\n" + str(self.weight) + "\n" + self.address + "\n" + Localization.getMessage('n.p' + str(self.payed), lang) + "\n" + self.note + "\n`" + Localization.getMessage('n.result', lang) + str(j['price']) + "`\n"
+        ret = Localization.getMessage('n.your_order', lang) + "\n" + self.name + ',' + "\n" + self.phone + "\n" + str(
+            self.weight) + "\n" + self.address + "\n" + Localization.getMessage('n.p' + str(self.payed),
+                                                        lang) + "\n" + self.note + "\n`" + Localization.getMessage(
+            'n.result', lang) + str(j['price']) + "`\n"
         main.bot.send_message(chatid, ret, reply_markup=keyboards.zero, parse_mode='markdown')
-        #main.bot.send_message(chatid, Localization.getMessage('n.your_order', lang), reply_markup=keyboards.zero)
-        #main.bot.send_message(chatid, self.name + ',', reply_markup=keyboards.zero)
-        #main.bot.send_message(chatid, self.phone, reply_markup=keyboards.zero)
-        #main.bot.send_message(chatid, str(self.weight) + ' ' + Localization.getMessage('n.kgs', lang), reply_markup=keyboards.zero)
-        #main.bot.send_message(chatid, self.address, reply_markup=keyboards.zero)
-        #main.bot.send_message(chatid, Localization.getMessage('n.p' + str(self.payed), lang), reply_markup=keyboards.zero)
-        #main.bot.send_message(chatid, self.note, reply_markup=keyboards.zero)
-        #main.bot.send_message(chatid, Localization.getMessage('n.result', lang) + str(j['price']), reply_markup=keyboards.zero)
         main.bot.send_message(chatid, Localization.getMessage('n.tarif', lang) +
                               str(j['from']) + '-' + str(j['to']) +
                               Localization.getMessage('n.days', lang) +
                               str(j['selfCost']) +
-                              Localization.getMessage('n.kg', lang), reply_markup=keyboards.loc.getKeyboard('new_order_accept', lang))
+                              Localization.getMessage('n.kg', lang),
+                              reply_markup=keyboards.loc.getKeyboard('new_order_accept', lang))
 
     def handle_message(self, chatid, message):
         lang = db.getLang(chatid)
         if self.substate == 0:
             self.name = message
             self.substate = 1
-            main.bot.send_message(chatid, Localization.getMessage('n.phone', lang), reply_markup=keyboards.zero, parse_mode='markdown')
+            main.bot.send_message(chatid, Localization.getMessage('n.phone', lang), reply_markup=keyboards.zero,
+                                  parse_mode='markdown')
         elif self.substate == 1:
             if not(message.isdigit()):
-                main.bot.send_message(chatid, 'Wrong phone format! Only digits without spaces or symbols!', reply_markup=keyboards.zero, parse_mode='markdown')
+                main.bot.send_message(chatid, 'Wrong phone format! Only digits without spaces or symbols!',
+                                      reply_markup=keyboards.zero, parse_mode='markdown')
                 return
             self.phone = message
             self.substate = 2
-            main.bot.send_message(chatid, Localization.getMessage('n.weight', lang), reply_markup=keyboards.zero, parse_mode='markdown')
+            main.bot.send_message(chatid, Localization.getMessage('n.weight', lang), reply_markup=keyboards.zero,
+                                  parse_mode='markdown')
         elif self.substate == 2:
             if not(message.isdigit()):
                 main.bot.send_message(chatid, 'Wrong weight!', reply_markup=keyboards.zero, parse_mode='markdown')
                 return
             self.weight = int(message)
             self.substate = 3
-            main.bot.send_message(chatid, Localization.getMessage('n.address', lang), reply_markup=keyboards.zero, parse_mode='markdown')
+            main.bot.send_message(chatid, Localization.getMessage('n.address', lang), reply_markup=keyboards.zero,
+                                  parse_mode='markdown')
         elif self.substate == 3:
             self.address = message
             self.substate = 4
-            main.bot.send_message(chatid, Localization.getMessage('n.payed', lang), reply_markup=keyboards.loc.getKeyboard('payed', lang), parse_mode='markdown')
+            main.bot.send_message(chatid, Localization.getMessage('n.payed', lang),
+                                  reply_markup=keyboards.loc.getKeyboard('payed', lang), parse_mode='markdown')
         elif self.substate == 5:
             self.note = message
             self.substate = 10
-            self.sendOrderInfo(chatid, lang)
+            self.send_order_info(chatid, lang)
 
 
 class MenuTrackState(StateCore):
@@ -199,40 +212,33 @@ class MenuTrackState(StateCore):
     def handle_message(self, chatid, message):
         lang = db.getLang(chatid)
         message = str(message)
-        #if message.startswith('TR-UZ-'):
-        #    id = int(message[len('TR-UZ-'):])
-        #    trackCode = str(message)
-        #else:
-        #    if not(message.isdigit()):
-        #        returnToMainMenu(chatid)
-        #        return
-        #    id = int(message)
-        #    if (id >= 1000) or (id < 0):
-        #        returnToMainMenu(chatid)
-        #        return
-        #    trackCode = 'TR-UZ-' + str(id).rjust(3, '0')
         trackCode = message
 
-        r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={'m': 'common', 'f': 'product_info', 'track_id': trackCode, 'lang': lang})
+        r = requests.post(config.site_base + 'ajax/ajaxCore.php',
+                          data={'m': 'common', 'f': 'product_info', 'track_id': trackCode, 'lang': lang})
         try:
             j = json.loads(r.text)
         except:
             print('[Mishin870] Error in handle track while parse json: ' + str(r.text))
-            returnToMainMenu(chatid)
+            main.bot.send_message(chatid, 'Internal error: ' + str(j['msg']), reply_markup=keyboards.zero)
+            return_to_main_menu(chatid)
             return
         if j['err'] == '1':
             main.bot.send_message(chatid, 'Internal error: ' + str(j['msg']), reply_markup=keyboards.zero)
-            returnToMainMenu(chatid)
+            return_to_main_menu(chatid)
             return
         j = json.loads(j['msg'])
         print(j)
-        ret = Localization.getMessage('i.your_track', lang) + "\n" + str(j['name']) + "\n\n" + Localization.getMessage('i.contacts', lang) + "\n" + "`" + str(j['phone']) + "`\n\n" + Localization.getMessage('i.tarif', lang) + str(j['from']) + '-' + str(j['to']) + Localization.getMessage('i.days', lang) + "\n"
-        #main.bot.send_message(chatid, Localization.getMessage('i.wait', lang) + str(j['day']) + ' ' + Localization.getMessage('m.' + str(j['month']), lang), reply_markup=keyboards.zero)
+        ret = Localization.getMessage('i.your_track', lang) + "\n" + str(j['name']) + "\n\n" + Localization.getMessage(
+            'i.contacts', lang) + "\n" + "`" + str(j['phone']) + "`\n\n" + Localization.getMessage('i.tarif',
+                                                                                                   lang) + str(
+            j['from']) + '-' + str(j['to']) + Localization.getMessage('i.days', lang) + "\n"
         if int(j['payed']) == 1:
             ret += '`' + Localization.getMessage('i.pricey', lang) + str(j['price']) + '$' + "\n`"
         else:
             ret += '`' + Localization.getMessage('i.price', lang) + str(j['price']) + '$' + "\n`"
-        ret += Localization.getMessage('i.weight', lang) + str(j['weight']) + ' ' + Localization.getMessage('n.kgs', lang) + "\n\n"
+        ret += Localization.getMessage('i.weight', lang) + str(j['weight']) + ' ' + Localization.getMessage('n.kgs',
+                                                                                                            lang) + "\n\n"
         pstate = int(j['state'])
         if pstate == 0:
             #головной офис
@@ -244,4 +250,4 @@ class MenuTrackState(StateCore):
             ret += str(j['date']) + '. ' + Localization.getMessage('i.tashkent', lang)
 
         main.bot.send_message(chatid, ret, reply_markup=keyboards.zero, parse_mode='markdown')
-        returnToMainMenu(chatid)
+        return_to_main_menu(chatid)

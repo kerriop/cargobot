@@ -11,10 +11,10 @@ bot = telebot.TeleBot(config.token)
 
 
 @bot.callback_query_handler(func=lambda c: True)
-def selectHandler(c):
+def select_handler(c):
     chatid = c.message.chat.id
     state = db.getState(chatid)
-    if state == None:
+    if state is not None:
         return
     state.handle_select(c.data, chatid)
 
@@ -39,11 +39,11 @@ def handler(message):
         return
     state.handle_message(chatid, message.text)
 
+
 if __name__ == '__main__':
-    print('Бот успешно загружен')
-    # bot.polling(none_stop=True)
     while True:
         try:
+            print('Бот успешно загружен')
             bot.polling(none_stop=True)
 
         except Exception as e:
