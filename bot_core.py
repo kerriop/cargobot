@@ -127,7 +127,9 @@ class MenuNewOrderState(StateCore):
             if data == 'yes':
                 main.bot.send_message(chatid, localization.get_message('n.order_yes', lang), reply_markup=keyboards.zero,
                                       parse_mode='markdown')
-                r = requests.post(config.site_base + 'ajax/ajaxCore.php', data={
+
+                print('Sending new product to main site...')
+                product_info = {
                     'm': 'common',
                     'f': 'add_product_bot',
                     'name': self.name,
@@ -136,7 +138,10 @@ class MenuNewOrderState(StateCore):
                     'payed': self.payed,
                     'address': self.address,
                     'note': self.note
-                });
+                }
+                print(product_info)
+                r = requests.post(config.site_base + 'ajax/ajaxCore.php', data=product_info)
+
                 return_to_main_menu(chatid)
             elif data == 'no':
                 main.bot.send_message(chatid, localization.get_message('n.order_no', lang), reply_markup=keyboards.zero,
@@ -160,7 +165,7 @@ class MenuNewOrderState(StateCore):
             return_to_main_menu(chatid)
             return
         j = json.loads(j['msg'])
-        
+
         ret = "{}\n{},\n{}\n{}\n{}\n{}\n{}\n{}{}\n".format(localization.get_message('n.your_order', lang), self.name,
                                                            self.phone, self.weight, self.address,
                                                            localization.get_message('n.p' + str(self.payed), lang),
@@ -170,7 +175,7 @@ class MenuNewOrderState(StateCore):
         main.bot.send_message(chatid, ret, reply_markup=keyboards.zero, parse_mode='markdown')
         ret = "{}{}-{}{}{}{}".format(localization.get_message('n.tarif', lang), j['from'], j['to'],
                                      localization.get_message('n.days', lang), j['selfCost'],
-                                     localization.get_message('n.n.kg', lang))
+                                     localization.get_message('n.kg', lang))
         main.bot.send_message(chatid, ret, reply_markup=keyboards.loc.get_keyboard('new_order_accept', lang))
 
     def handle_message(self, chatid, message):
@@ -236,12 +241,12 @@ class MenuTrackState(StateCore):
                                                          localization.get_message('i.tarif', lang), j['from'], j['to'],
                                                          localization.get_message('i.days', lang))
         if int(j['payed']) == 1:
-            ret += "`{}{}$\n".format(localization.get_message('i.pricey', lang), j['price'])
+            ret += "`{}{}$`\n".format(localization.get_message('i.pricey', lang), j['price'])
         else:
-            ret += "`{}{}$\n".format(localization.get_message('i.price', lang), j['price'])
+            ret += "`{}{}$`\n".format(localization.get_message('i.price', lang), j['price'])
 
         ret += "{}{} {}\n\n".format(localization.get_message('i.weight', lang), j['weight'],
-                                    localization.get_message('i.kgs', lang))
+                                    localization.get_message('n.kgs', lang))
 
         pstate = int(j['state'])
         if pstate == 0:
