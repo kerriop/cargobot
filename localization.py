@@ -1,11 +1,13 @@
 ru = {}
 tr = {}
 
+
 def set_message(name, lang, message):
     if lang == 'ru':
         ru[name] = message
     elif lang == 'tr':
         tr[name] = message
+
 
 def get_message(name, lang):
     if lang == 'ru':
@@ -35,7 +37,7 @@ set_message('what_i_can', 'tr',
             'İzlemek için gönderinizin. E-posta bildirimleri ve hareket. Sipariş almak, yeni bir teslim.')
 
 
-#Месяцы
+# Месяцы
 set_message('m.0', 'ru', 'янв')
 set_message('m.1', 'ru', 'фев')
 set_message('m.2', 'ru', 'мар')
@@ -62,7 +64,7 @@ set_message('m.9', 'tr', 'ekim')
 set_message('m.10', 'tr', 'kasım')
 set_message('m.11', 'tr', 'aralık')
 
-#Инфо о грузе
+# Инфо о грузе
 set_message('i.your_track', 'ru', 'Ваш заказ,')
 set_message('i.contacts', 'ru', 'Контактные данные')
 set_message('i.cost', 'ru', 'Цена: ')
@@ -93,7 +95,7 @@ set_message('i.terr', 'tr', 'Geldi toprakları, Özbekistan')
 set_message('i.stambul', 'tr', 'İstanbul')
 set_message('i.tashkent', 'tr', 'Taşkent')
 
-#Новый заказ
+# Новый заказ
 set_message("n.pre", "ru", "Для того чтобы сделать заказ.")
 set_message("n.name", "ru", "Ваше имя и фамилия.\n_Например, Мурат Демирджи_")
 set_message("n.phone", "ru", "Ваш номер телефона.\n_Например, 89001002030_")

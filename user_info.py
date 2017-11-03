@@ -11,8 +11,10 @@ class UserInfo(object):
 
 users = {}
 
+
 def add_user(chatid):
     users[chatid] = UserInfo()
+
 
 def get_user(chatid):
     return users.get(chatid)

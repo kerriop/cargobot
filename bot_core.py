@@ -29,7 +29,7 @@ class StateStart(StateCore):
 
     def handle_start(self, chatid):
         state = StateWaitNext()
-        db.setState(chatid, state)
+        db.set_state(chatid, state)
         main.bot.send_message(chatid, "Привет, я бот Uzglobalkargo. Я могу отследить ваш груз по вашему трэк-коду, "
                                       "присылать уведомления о доставке груза. Еще могу принимать новые заказы на "
                                       "отправку грузов из Турции в Узбекистан. Для продолжения напишите 'Далее'",
@@ -41,7 +41,7 @@ class StateWaitNext(StateCore):
     def handle_message(self, chatid, message):
         if message == 'Далее':
             state = StateLicense()
-            db.setState(chatid, state)
+            db.set_state(chatid, state)
             main.bot.send_message(chatid, 'Чтобы продолжить, вам необходимо дать согласие на обработку и передачу '
                                           'своих персональных данных. Данные не будут переданы третьим лицам и '
                                           'сторонним организациям',
@@ -53,14 +53,14 @@ class StateLicense(StateCore):
     def handle_message(self, chatid, message):
         if message == 'Даю согласие':
             state = StateLanguage()
-            db.setState(chatid, state)
+            db.set_state(chatid, state)
             main.bot.send_message(chatid, 'Выберите', reply_markup=keyboards.zero)
             main.bot.send_message(chatid, 'свой язык:', reply_markup=keyboards.language)
 
 
 def return_to_main_menu(chatid):
     state = StateMenu()
-    db.setState(chatid, state)
+    db.set_state(chatid, state)
     state.reset(chatid)
 
 
@@ -69,9 +69,9 @@ class StateLanguage(StateCore):
     def handle_select(self, data, chatid):
         code = str(data)
         if code == 'ru':
-            db.setLang(chatid, 'ru')
+            db.set_lang(chatid, 'ru')
         elif code == 'tr':
-            db.setLang(chatid, 'tr')
+            db.set_lang(chatid, 'tr')
         else:
             return
         return_to_main_menu(chatid)
@@ -80,21 +80,21 @@ class StateLanguage(StateCore):
 class StateMenu(StateCore):
 
     def reset(self, chatid):
-        code = db.getLang(chatid)
+        code = db.get_lang(chatid)
         main.bot.send_message(chatid, localization.get_message('select_action', code),
-                              reply_markup=keyboards.loc.getKeyboard('menu', code))
+                              reply_markup=keyboards.loc.get_keyboard('menu', code))
 
     def handle_select(self, data, chatid):
-        lang = db.getLang(chatid)
+        lang = db.get_lang(chatid)
         code = str(data)
         if code == 'track':
             state = MenuTrackState()
-            db.setState(chatid, state)
+            db.set_state(chatid, state)
             main.bot.send_message(chatid, localization.get_message('enter_client_code', lang),
                                   reply_markup=keyboards.zero)
         elif code == 'order':
             state = MenuNewOrderState()
-            db.setState(chatid, state)
+            db.set_state(chatid, state)
             state.reset(chatid)
         elif code == 'info':
             main.bot.send_message(chatid, localization.get_message('what_i_can', lang), reply_markup=keyboards.zero)
@@ -113,7 +113,7 @@ class MenuNewOrderState(StateCore):
         self.substate = 0
 
     def reset(self, chatid):
-        lang = db.getLang(chatid)
+        lang = db.get_lang(chatid)
         main.bot.send_message(chatid, localization.get_message('n.pre', lang), reply_markup=keyboards.zero,
                               parse_mode='markdown')
         main.bot.send_message(chatid, localization.get_message('n.name', lang), reply_markup=keyboards.zero,
@@ -121,7 +121,7 @@ class MenuNewOrderState(StateCore):
         self.substate = 0
 
     def handle_select(self, data, chatid):
-        lang = db.getLang(chatid)
+        lang = db.get_lang(chatid)
         data = str(data)
         if self.substate == 10:
             if data == 'yes':
@@ -170,10 +170,10 @@ class MenuNewOrderState(StateCore):
                               localization.get_message('n.days', lang) +
                               str(j['selfCost']) +
                               localization.get_message('n.kg', lang),
-                              reply_markup=keyboards.loc.getKeyboard('new_order_accept', lang))
+                              reply_markup=keyboards.loc.get_keyboard('new_order_accept', lang))
 
     def handle_message(self, chatid, message):
-        lang = db.getLang(chatid)
+        lang = db.get_lang(chatid)
         if self.substate == 0:
             self.name = message
             self.substate = 1
@@ -200,7 +200,7 @@ class MenuNewOrderState(StateCore):
             self.address = message
             self.substate = 4
             main.bot.send_message(chatid, localization.get_message('n.payed', lang),
-                                  reply_markup=keyboards.loc.getKeyboard('payed', lang), parse_mode='markdown')
+                                  reply_markup=keyboards.loc.get_keyboard('payed', lang), parse_mode='markdown')
         elif self.substate == 5:
             self.note = message
             self.substate = 10
@@ -210,7 +210,7 @@ class MenuNewOrderState(StateCore):
 class MenuTrackState(StateCore):
 
     def handle_message(self, chatid, message):
-        lang = db.getLang(chatid)
+        lang = db.get_lang(chatid)
         message = str(message)
         trackCode = message
 

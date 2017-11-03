@@ -7,7 +7,7 @@ import config
 @bot.callback_query_handler(func=lambda c: True)
 def select_handler(c):
     chatid = c.message.chat.id
-    state = db.getState(chatid)
+    state = db.get_state(chatid)
     if state is None:
         return
     state.handle_select(c.data, chatid)
@@ -17,7 +17,7 @@ def select_handler(c):
 def handle_start(message):
     chatid = message.chat.id
     state = StateStart()
-    db.setState(chatid, state)
+    db.set_state(chatid, state)
     state.handle_start(chatid)
 
 
@@ -27,7 +27,7 @@ def handler(message):
     if message.text == '':
         bot.send_message(chatid, 'Пожалуйста, введите текст..')
         return
-    state = db.getState(chatid)
+    state = db.get_state(chatid)
     if state is None:
         bot.send_message(chatid, 'Для начала работы введите /start')
         return
