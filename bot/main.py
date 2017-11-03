@@ -1,5 +1,5 @@
 import telebot
-from StateCore import *
+from bot_core import *
 import time
 import config
 
