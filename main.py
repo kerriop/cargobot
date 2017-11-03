@@ -1,20 +1,15 @@
 import telebot
-from StateCore import *
+from bot_core import *
 import time
 import config
 
 bot = telebot.TeleBot(config.token)
 
-#bot.send_message(chatid, 'Чтобы продолжить, вам необходимо дать согласие на обработку и передачу своих персональных данных. Данные не будут переданы третьим лицам и сторонним организациям', reply_markup=keyboards.accept)
-#bot.send_message(chatid, 'Введите /start, чтобы начать', reply_markup=keyboards.zero)
-#bot.send_message(chatid, 'Здравствуйте, с помощью данного бота можно подать заявление на проживание в Турции через сайт https://e-ikamet.goc.gov.tr', reply_markup=keyboards.zero)
-#bot.send_message(chatid, 'Напишите "Далее" для продолжения', reply_markup=keyboards.next)
-
 
 @bot.callback_query_handler(func=lambda c: True)
 def select_handler(c):
     chatid = c.message.chat.id
-    state = db.getState(chatid)
+    state = db.get_state(chatid)
     if state is None:
         return
     state.handle_select(c.data, chatid)
@@ -24,7 +19,7 @@ def select_handler(c):
 def handle_start(message):
     chatid = message.chat.id
     state = StateStart()
-    db.setState(chatid, state)
+    db.set_state(chatid, state)
     state.handle_start(chatid)
 
 
@@ -34,7 +29,7 @@ def handler(message):
     if message.text == '':
         bot.send_message(chatid, 'Пожалуйста, введите текст..')
         return
-    state = db.getState(chatid)
+    state = db.get_state(chatid)
     if state is None:
         bot.send_message(chatid, 'Для начала работы введите /start')
         return
