@@ -3,6 +3,8 @@ from bot_core import *
 import time
 import config
 
+bot = telebot.TeleBot(config.token)
+
 
 @bot.callback_query_handler(func=lambda c: True)
 def select_handler(c):
@@ -35,7 +37,6 @@ def handler(message):
 
 
 if __name__ == '__main__':
-    bot = telebot.TeleBot(config.token)
     while True:
         try:
             print('Бот успешно загружен')

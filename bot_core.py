@@ -160,17 +160,18 @@ class MenuNewOrderState(StateCore):
             return_to_main_menu(chatid)
             return
         j = json.loads(j['msg'])
-        ret = localization.get_message('n.your_order', lang) + "\n" + self.name + ',' + "\n" + self.phone + "\n" + str(
-            self.weight) + "\n" + self.address + "\n" + localization.get_message('n.p' + str(self.payed),
-                                                                                 lang) + "\n" + self.note + "\n`" + localization.get_message(
-            'n.result', lang) + str(j['price']) + "`\n"
+        
+        ret = "{}\n{},\n{}\n{}\n{}\n{}\n{}\n{}{}\n".format(localization.get_message('n.your_order', lang), self.name,
+                                                           self.phone, self.weight, self.address,
+                                                           localization.get_message('n.p' + str(self.payed), lang),
+                                                           self.note,
+                                                           localization.get_message('n.result', lang),
+                                                           j['price'])
         main.bot.send_message(chatid, ret, reply_markup=keyboards.zero, parse_mode='markdown')
-        main.bot.send_message(chatid, localization.get_message('n.tarif', lang) +
-                              str(j['from']) + '-' + str(j['to']) +
-                              localization.get_message('n.days', lang) +
-                              str(j['selfCost']) +
-                              localization.get_message('n.kg', lang),
-                              reply_markup=keyboards.loc.get_keyboard('new_order_accept', lang))
+        ret = "{}{}-{}{}{}{}".format(localization.get_message('n.tarif', lang), j['from'], j['to'],
+                                     localization.get_message('n.days', lang), j['selfCost'],
+                                     localization.get_message('n.n.kg', lang))
+        main.bot.send_message(chatid, ret, reply_markup=keyboards.loc.get_keyboard('new_order_accept', lang))
 
     def handle_message(self, chatid, message):
         lang = db.get_lang(chatid)
@@ -212,43 +213,45 @@ class MenuTrackState(StateCore):
     def handle_message(self, chatid, message):
         lang = db.get_lang(chatid)
         message = str(message)
-        trackCode = message
+        track_code = message
 
         r = requests.post(config.site_base + 'ajax/ajaxCore.php',
-                          data={'m': 'common', 'f': 'product_info', 'track_id': trackCode, 'lang': lang})
+                          data={'m': 'common', 'f': 'product_info', 'track_id': track_code, 'lang': lang})
         j = {'err': '1'}
         try:
             j = json.loads(r.text)
         except:
-            print('[Mishin870] Error in handle track while parse json: ' + str(r.text))
-            main.bot.send_message(chatid, 'Internal error: ' + str(j['msg']), reply_markup=keyboards.zero)
+            print('[Mishin870] Error in handle track while parse json: {}'.format(r.text))
+            main.bot.send_message(chatid, 'Internal error: {}'.format(j['msg']), reply_markup=keyboards.zero)
             return_to_main_menu(chatid)
             return
         if j['err'] == '1':
-            main.bot.send_message(chatid, 'Internal error: ' + str(j['msg']), reply_markup=keyboards.zero)
+            main.bot.send_message(chatid, 'Internal error: {}'.format(j['msg']), reply_markup=keyboards.zero)
             return_to_main_menu(chatid)
             return
         j = json.loads(j['msg'])
-        print(j)
-        ret = localization.get_message('i.your_track', lang) + "\n" + str(j['name']) + "\n\n" + localization.get_message(
-            'i.contacts', lang) + "\n" + "`" + str(j['phone']) + "`\n\n" + localization.get_message('i.tarif',
-                                                                                                    lang) + str(
-            j['from']) + '-' + str(j['to']) + localization.get_message('i.days', lang) + "\n"
+        # it is both bad and.. fine
+        ret = "{}\n{}\n\n{}\n`{}`\n\n{}{}-{}{}\n".format(localization.get_message('i.your_track', lang), j['name'],
+                                                         localization.get_message('i.contacts', lang), j['phone'],
+                                                         localization.get_message('i.tarif', lang), j['from'], j['to'],
+                                                         localization.get_message('i.days', lang))
         if int(j['payed']) == 1:
-            ret += '`' + localization.get_message('i.pricey', lang) + str(j['price']) + '$' + "\n`"
+            ret += "`{}{}$\n".format(localization.get_message('i.pricey', lang), j['price'])
         else:
-            ret += '`' + localization.get_message('i.price', lang) + str(j['price']) + '$' + "\n`"
-        ret += localization.get_message('i.weight', lang) + str(j['weight']) + ' ' + localization.get_message('n.kgs',
-                                                                                                              lang) + "\n\n"
+            ret += "`{}{}$\n".format(localization.get_message('i.price', lang), j['price'])
+
+        ret += "{}{} {}\n\n".format(localization.get_message('i.weight', lang), j['weight'],
+                                    localization.get_message('i.kgs', lang))
+
         pstate = int(j['state'])
         if pstate == 0:
-            #головной офис
-            ret += localization.get_message('i.office', lang) + "\n"
-            ret += str(j['date']) + '. ' + localization.get_message('i.stambul', lang)
+            # головной офис
+            ret += "{}\n{}. {}".format(localization.get_message('i.office', lang), j['date'],
+                                       localization.get_message('i.stambul', lang))
         elif pstate >= 1:
-            #терр.
-            ret += localization.get_message('i.terr', lang) + "\n"
-            ret += str(j['date']) + '. ' + localization.get_message('i.tashkent', lang)
+            # терр.
+            ret += "{}\n{}. {}".format(localization.get_message('i.terr', lang), j['date'],
+                                       localization.get_message('i.tashkent', lang))
 
         main.bot.send_message(chatid, ret, reply_markup=keyboards.zero, parse_mode='markdown')
         return_to_main_menu(chatid)
